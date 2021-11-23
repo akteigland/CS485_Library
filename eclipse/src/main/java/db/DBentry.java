@@ -49,7 +49,7 @@ public class DBentry {
 	public boolean checkLogin(String username, String password) {
 		try {
 			dbconn = newConnection();
-			sql = dbconn.prepareStatement("SELECT * FROM cs485_homework1.login WHERE username = \"" + username + "\" AND password = \"" + password + "\";");
+			sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \"" + username + "\" AND password = \"" + password + "\";");
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
@@ -63,7 +63,7 @@ public class DBentry {
 	public boolean checkUser(String username) {
 		try {
 			dbconn = newConnection();
-			sql = dbconn.prepareStatement("SELECT * FROM cs485_homework1.login WHERE username = \"" + username + "\";");
+			sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \"" + username + "\";");
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
@@ -74,10 +74,10 @@ public class DBentry {
 		}
 	}
 
-	public boolean addUser (String username, String password) {
+	public boolean addUser (String username, String password, String first, String last) {
 		try {
 			dbconn = newConnection();
-			sql.executeUpdate("INSERT INTO cs485_homework1.login VALUES (\"" + username + "\", \"" + password + "\");");
+			sql.executeUpdate("INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\");");
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();

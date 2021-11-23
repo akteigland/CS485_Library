@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>CS485 Homework</title>
+		<title>Library</title>
 	</head>
 	<body>
 		<%@ page import="java.io.*" %> 
