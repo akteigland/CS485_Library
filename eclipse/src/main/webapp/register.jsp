@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -9,14 +9,14 @@
 	<body>
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
-		<form action="register.jsp" method="get">
+		<form action="register.jsp" method="post"> <!--  use post to hide password in URL -->
 			Register your account:<br>
-			Username: <input type="text" id="user" name="username"/><br>
-			Password: <input type="password" id="pass" name="password"/><br>
-			Confrim Password: <input type="password" id="pass2" name="password2"/><br>
-			First Name: <input type="text" id="first" name="firstname"/><br>
-			Last Name: <input type="text" id="last" name="lastname"/><br>
-			<input type="submit" Value="Submit"></input>
+			Username: <input type="text" id="user" name="username" required/><br>
+			Password: <input type="password" id="pass" name="password" required/><br>
+			Confirm Password: <input type="password" id="pass2" name="password2" required/><br>
+			First Name: <input type="text" id="first" name="firstname" required/><br>
+			Last Name: <input type="text" id="last" name="lastname" required/><br>
+			<input type="submit" name="submitRegister"  Value="Submit"></input>
 		</form>
 		<form action="index.jsp" method="get"> <!-- goes to index.jsp -->
 			<input type="submit" Value="Back"></input>
@@ -29,21 +29,16 @@
 			String lastname = request.getParameter("firstname");
 			
 			// if user entered a username
-			if (username != null && username.trim() != ""){
-				if (password != null && password.trim() != ""){
-					if (password.equals(password2)){
-					if (DBentry.checkUser(username)){
-						%><div class="errorMessage">Username is already taken</div><%
+			if (request.getParameter("submitRegister") != null) {
+				if (password.equals(password2)){
+					String message  = DBentry.addUser(username, password, firstname, lastname);
+					if (message != null)
+						%><div class="errorMessage"><%=message%></div><%	
 					} else {
-						DBentry.addUser(username, password, firstname, lastname);
 						%><script type="text/javascript">window.alert("Sucessfully registered!")</script><%	
 					}
-					} else {
-						%><div class="errorMessage">Passwords do not match</div><%
-					}
 				} else {
-					%><div class="errorMessage">You must enter a password</div><%
-				}
-			}%>
+					%><div class="errorMessage">Passwords do not match</div><%
+				}%>
 	</body>
 </html>

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class DBentry {
@@ -27,9 +28,9 @@ public class DBentry {
 
 	/**
 	 * Checks if login credentials are valid
-	 * @param username 
+	 * @param username
 	 * @param password
-	 * @return a boolean 
+	 * @return a boolean
 	 */
 	public static boolean checkLogin(String username, String password) {
 		try {
@@ -74,19 +75,21 @@ public class DBentry {
 	 * @param password
 	 * @param first - first name of the user
 	 * @param last - last name of the user
-	 * @return a boolean (true on success, false on failure)
+	 * @return a String error message or null
 	 */
-	public static boolean addUser(String username, String password, String first, String last) {
+	public static String addUser(String username, String password, String first, String last) {
 		Connection dbconn = newConnection();
 		try {
 			Statement sql = dbconn.createStatement();
 			sql.executeUpdate(
-					"INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\");");
+					"INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\", \"" + first+ "\", \"" + last + "\");");
 			dbconn.close();
-			return true;
+			return null;
+		} catch (SQLIntegrityConstraintViolationException ex) {
+			return "Username " + username + " is already taken.";
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return false;
+			return "Unknown error, please try again.";
 		}
 	}
 
