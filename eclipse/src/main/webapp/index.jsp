@@ -9,8 +9,9 @@
 	<body>
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
+		<h1>The Library</h1>
 		<form action="index.jsp" method="post"> <!--  use post to hide password in URL -->
-			Login to your account:<br>
+			<b>Login</b><br>
 			Username: <input type="text" id="user" name="username"/><br>
 			Password: <input type="password" id="pass" name="password"/><br>
 			<input type="submit" Value="Submit"></input>

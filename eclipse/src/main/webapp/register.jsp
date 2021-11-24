@@ -9,8 +9,9 @@
 	<body>
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
+		<h1>The Library</h1>
 		<form action="register.jsp" method="post"> <!--  use post to hide password in URL -->
-			Register your account:<br>
+			<b>Register</b><br>
 			Username: <input type="text" id="user" name="username" required/><br>
 			Password: <input type="password" id="pass" name="password" required/><br>
 			Confirm Password: <input type="password" id="pass2" name="password2" required/><br>
@@ -29,16 +30,17 @@
 			String lastname = request.getParameter("firstname");
 			
 			// if user entered a username
-			if (request.getParameter("submitRegister") != null) {
+			if (request.getParameter("submitRegister") != null) { // if form was submitted
 				if (password.equals(password2)){
 					String message  = DBentry.addUser(username, password, firstname, lastname);
-					if (message != null)
+					if (message != null) {
 						%><div class="errorMessage"><%=message%></div><%	
 					} else {
 						%><script type="text/javascript">window.alert("Sucessfully registered!")</script><%	
 					}
 				} else {
 					%><div class="errorMessage">Passwords do not match</div><%
-				}%>
+				}
+			}%>
 	</body>
 </html>
