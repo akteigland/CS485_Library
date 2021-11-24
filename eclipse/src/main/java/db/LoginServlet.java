@@ -45,15 +45,15 @@ public class LoginServlet extends HttpServlet {
 				if (password.equals(password2)) {
 					String message = addUser(username, password, firstname, lastname);
 					if (message != null) {
-						session.setAttribute("errorMessage", message);
-						response.sendRedirect("register.jsp");
+						request.setAttribute("errorMessage", message);
+			            request.getRequestDispatcher("register.jsp").forward(request, response);
 					} else {
 						session.setAttribute("user", username);
 						response.sendRedirect("welcome.jsp");
 					}
 				} else {
-					session.setAttribute("errorMessage", "Passwords must match");
-					response.sendRedirect("register.jsp");
+					request.setAttribute("errorMessage", "Passwords must match");
+		            request.getRequestDispatcher("register.jsp").forward(request, response);
 				}
 			}
 		} else {
@@ -67,16 +67,16 @@ public class LoginServlet extends HttpServlet {
 						session.setAttribute("user", username);
 						response.sendRedirect("welcome.jsp");
 					} else {
-						session.setAttribute("errorMessage", "Incorrect username or password");
-						response.sendRedirect("index.jsp");
+						request.setAttribute("errorMessage", "Incorrect username or password");
+			            request.getRequestDispatcher("index.jsp").forward(request, response);
 					}
 				} else {
-					session.setAttribute("errorMessage", "You must enter a password");
-					response.sendRedirect("index.jsp");
+					request.setAttribute("errorMessage", "You must enter a password");
+		            request.getRequestDispatcher("index.jsp").forward(request, response);
 				}
 			} else {
-				session.setAttribute("errorMessage", "You must enter a username");
-				response.sendRedirect("index.jsp");
+				request.setAttribute("errorMessage", "You must enter a username");
+	            request.getRequestDispatcher("index.jsp").forward(request, response);
 			}
 		}
 	}
