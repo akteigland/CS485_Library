@@ -19,14 +19,13 @@
 			<input type="submit" Value="Register"></input>
 		</form>
 		<%
-			DBentry dbentry = new DBentry();
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			
 			// if user entered a username
 			if (username != null && username.trim() != ""){
 				if (password != null && password.trim() != ""){
-					if (dbentry.checkLogin(username, password)){
+					if (DBentry.checkLogin(username, password)){
 						%><script type="text/javascript">window.location.replace("welcome.jsp")</script><%	
 					} else {
 						%><div class="errorMessage">Incorrect username or password</div><%
