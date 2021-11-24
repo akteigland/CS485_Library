@@ -39,6 +39,7 @@ public class DBentry {
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
+			dbconn.close();
 			return hasMatch;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -59,6 +60,7 @@ public class DBentry {
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
+			dbconn.close();
 			return hasMatch;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -75,11 +77,12 @@ public class DBentry {
 	 * @return a boolean (true on success, false on failure)
 	 */
 	public static boolean addUser(String username, String password, String first, String last) {
+		Connection dbconn = newConnection();
 		try {
-			Connection dbconn = newConnection();
 			Statement sql = dbconn.createStatement();
 			sql.executeUpdate(
 					"INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\");");
+			dbconn.close();
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();

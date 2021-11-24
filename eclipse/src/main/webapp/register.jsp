@@ -22,7 +22,6 @@
 			<input type="submit" Value="Back"></input>
 		</form>
 		<%
-			DBentry dbentry = new DBentry();
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			String password2 = request.getParameter("password2");
@@ -33,11 +32,10 @@
 			if (username != null && username.trim() != ""){
 				if (password != null && password.trim() != ""){
 					if (password.equals(password2)){
-					if (dbentry.checkUser(username)){
+					if (DBentry.checkUser(username)){
 						%><div class="errorMessage">Username is already taken</div><%
 					} else {
-						dbentry.addUser(username, password, firstname, lastname);
-						dbentry.close();
+						DBentry.addUser(username, password, firstname, lastname);
 						%><script type="text/javascript">window.alert("Sucessfully registered!")</script><%	
 					}
 					} else {
