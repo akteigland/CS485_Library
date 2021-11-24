@@ -14,9 +14,9 @@
 			<b>Login</b><br>
 			Username: <input type="text" id="user" name="username"/><br>
 			Password: <input type="password" id="pass" name="password"/><br>
+			<div style="min-height: 20px; color: #FF0000;">${errorMessage}</div>
 			<input type="submit" Value="Submit"></input>
 		</form>
-		<div style="min-height: 20px; color: #FF0000;">${errorMessage}</div>
 		<form action="register.jsp" method="get"> <!-- goes to register.jsp -->
 			<input type="submit" Value="Register"></input>
 		</form>

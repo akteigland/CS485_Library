@@ -2,9 +2,7 @@ package db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class DBentry {
@@ -26,54 +24,6 @@ public class DBentry {
 			err.printStackTrace(); // Changed to printStackTrace()
 		}
 		return null;
-	}
-
-	/**
-	 * Checks if login credentials are valid
-	 * 
-	 * @param username
-	 * @param password
-	 * @return a boolean
-	 */
-	public static boolean checkLogin(String username, String password) {
-		try {
-			Connection dbconn = newConnection();
-			PreparedStatement sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \""
-					+ username + "\" AND password = \"" + password + "\";");
-			ResultSet results;
-			results = sql.executeQuery();
-			boolean hasMatch = results.next();
-			dbconn.close();
-			return hasMatch;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * Adds a user to the database
-	 * 
-	 * @param username
-	 * @param password
-	 * @param first    - first name of the user
-	 * @param last     - last name of the user
-	 * @return a String error message or null
-	 */
-	public static String addUser(String username, String password, String first, String last) {
-		Connection dbconn = newConnection();
-		try {
-			Statement sql = dbconn.createStatement();
-			sql.executeUpdate("INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password
-					+ "\", \"" + first + "\", \"" + last + "\");");
-			dbconn.close();
-			return null;
-		} catch (SQLIntegrityConstraintViolationException ex) {
-			return "Username " + username + " is already taken.";
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return "Unknown error, please try again.";
-		}
 	}
 
 	private static String bookDivGenerator(String img, String title, String author, String desc, String[] genres,
