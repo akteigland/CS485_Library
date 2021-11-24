@@ -10,11 +10,8 @@
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
 		<h1>The Library</h1>
-		<form action="books.jsp" method="post">
-			<input type="submit" name="books" Value="View Books">
-		</form>
-		<form action="goodbye.jsp" method="get">
-			<input type="submit" Value="Logout"></input>
-		</form>
 	</body>
+	<%
+		out.print(DBentry.printBooks());
+	%>
 </html>
