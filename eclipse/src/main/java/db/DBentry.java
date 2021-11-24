@@ -1,55 +1,41 @@
 package db;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBentry {
 
-	Connection dbconn;
-	ResultSet results = null;
-	PreparedStatement sql;
-	StringBuilder sb = new StringBuilder();
+	static String dbPath = "jdbc:mysql://localhost:3306";
 
-	//change URL to your database server as needed
-	String dbPath="jdbc:mysql://localhost:3306";
-
-	public DBentry() {
-
-	}
-
-	//Establish connection to MySQL server
-	private Connection newConnection() {
+	/**
+	 * Establishes a connection to the MySQL server
+	 * @return a connection or null on error
+	 */
+	private static Connection newConnection() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			try {
-				dbconn = DriverManager.getConnection(dbPath, "root", "admin");
-				return dbconn;
-			}
-			catch (Exception s){
-				s.printStackTrace();} //Changed to printStackTrace()
-		}
-		catch (Exception err){
-			err.printStackTrace(); //Changed to printStackTrace()
+			Connection dbconn = DriverManager.getConnection(dbPath, "root", "admin");
+			return dbconn;
+		} catch (Exception err) {
+			err.printStackTrace(); // Changed to printStackTrace()
 		}
 		return null;
 	}
 
-	public void close() {
-		if (dbconn != null) {
-			try {
-				dbconn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public boolean checkLogin(String username, String password) {
+	/**
+	 * Checks if login credentials are valid
+	 * @param username 
+	 * @param password
+	 * @return a boolean 
+	 */
+	public static boolean checkLogin(String username, String password) {
 		try {
-			dbconn = newConnection();
-			sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \"" + username + "\" AND password = \"" + password + "\";");
+			Connection dbconn = newConnection();
+			PreparedStatement sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \""
+					+ username + "\" AND password = \"" + password + "\";");
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
@@ -60,10 +46,16 @@ public class DBentry {
 		}
 	}
 
-	public boolean checkUser(String username) {
+	/**
+	 * Checks if a username is already in the database
+	 * @param username
+	 * @return a boolean
+	 */
+	public static boolean checkUser(String username) {
 		try {
-			dbconn = newConnection();
-			sql = dbconn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \"" + username + "\";");
+			Connection dbconn = newConnection();
+			PreparedStatement sql = dbconn
+					.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \"" + username + "\";");
 			ResultSet results;
 			results = sql.executeQuery();
 			boolean hasMatch = results.next();
@@ -74,10 +66,20 @@ public class DBentry {
 		}
 	}
 
-	public boolean addUser (String username, String password, String first, String last) {
+	/**
+	 * Adds a user to the database
+	 * @param username
+	 * @param password
+	 * @param first - first name of the user
+	 * @param last - last name of the user
+	 * @return a boolean (true on success, false on failure)
+	 */
+	public static boolean addUser(String username, String password, String first, String last) {
 		try {
-			dbconn = newConnection();
-			sql.executeUpdate("INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\");");
+			Connection dbconn = newConnection();
+			Statement sql = dbconn.createStatement();
+			sql.executeUpdate(
+					"INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password + "\");");
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
