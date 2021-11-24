@@ -13,6 +13,6 @@
 		<h1>The Library</h1>
 	</body>
 	<%
-		out.print(DBentry.printBooks());
+		out.print(DBentry.printBooks("test"));
 	%>
 </html>

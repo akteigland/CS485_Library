@@ -78,7 +78,7 @@ public class DBentry {
 
 	private static String bookDivGenerator(String img, String title, String author, String desc, String[] genres,
 			String[] awards, String lang, long isbn, String edition, int pages, String publisher, String date,
-			String user) {
+			String user, int total, int available, boolean isChecked, String bookId) {
 		StringBuilder book = new StringBuilder();
 		// open div
 		book.append("<div class=\"bookBlock\">");
@@ -87,7 +87,7 @@ public class DBentry {
 		book.append("<img alt=\"book cover\" width=\"250\" height=\"400\" align=\"left\" src=\"");
 		book.append(img);
 		book.append("\">");
-		
+
 		// main info
 		book.append("<p>");
 		book.append("<b>");
@@ -97,24 +97,24 @@ public class DBentry {
 		book.append(author);
 		book.append("<br><br>");
 		book.append(desc);
-		
+
 		// extra info
 		book.append("<br>");
-		
+
 		book.append("<br>ISBN: ");
 		if (isbn != 0 && isbn != 9999999999999L) {
 			book.append(isbn);
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Language: ");
 		if (!lang.isBlank()) {
 			book.append(lang);
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Edition: ");
 		if (!edition.isBlank()) {
 			book.append(edition);
@@ -128,35 +128,61 @@ public class DBentry {
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Publisher: ");
 		if (!publisher.isBlank()) {
 			book.append(publisher);
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Published Date: ");
 		if (!date.isBlank()) {
 			book.append(date);
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Genres: ");
 		if (genres != null) {
 			book.append(genres.toString());
 		} else {
 			book.append("N/A");
 		}
-		
+
 		book.append("<br>Awards: ");
 		if (awards != null) {
 			book.append(awards.toString());
 		} else {
 			book.append("N/A");
 		}
-		
+
+		// only show if logged in
+		if (user != null) {
+			book.append("<br><br>");
+			book.append(available);
+			book.append(" of ");
+			book.append(total);
+			book.append(" copies are available");
+			book.append("<br>");
+			if (isChecked) {
+				book.append("You currently have a copy of this book checked out.");
+				book.append("<input type='button' value='Return' onclick='return(");
+				book.append(user);
+				book.append(", ");
+				book.append(bookId);
+				book.append(")'/>");
+				book.append("<br>");
+			} else {
+				book.append("<input type='button' value='Checkout' onclick='checkout(");
+				book.append(user);
+				book.append(", ");
+				book.append(bookId);
+				book.append(")'/>");
+				book.append("<br>");
+			}
+		}
+
 		book.append("</p>");
 
 		// close div
@@ -164,14 +190,52 @@ public class DBentry {
 		return book.toString();
 	}
 
-	public static String printBooks() {
+	public static String printBooks(String user) {
+		// TODO: combine queries?
 		Connection dbconn = newConnection();
+		Connection dbconn2 = newConnection();
+
 		try {
 			StringBuilder table = new StringBuilder();
 			Statement sql = dbconn.createStatement();
+			Statement sql2 = dbconn2.createStatement();
+
 			ResultSet data = sql.executeQuery("SELECT * from cs485_project.books LIMIT " + BOOKS_PER_PAGE);
 			while (data.next()) {
-				table.append(bookDivGenerator(data.getString("coverImg"),data.getString("title"),data.getString("author"), data.getString("description"), null, null, data.getString("language"), data.getLong("isbn"), data.getString("edition"), data.getInt("pages"), data.getString("publisher"), data.getString("firstPublishDate"), "username"));
+				int total = 0;
+				int available = 0;
+				boolean isChecked = false;
+				// if there is a user logged in, get copy info
+				if (user != null) {
+					// combining these into 1 query would be great
+					ResultSet totalCopies = sql2
+							.executeQuery("SELECT COUNT(copyNumber) FROM cs485_project.inventory WHERE bookID = \""
+									+ data.getString(1) + "\"");
+					if (totalCopies.next()) {
+						total = totalCopies.getInt(1);
+					}
+					;
+					ResultSet checkedCopies = sql2
+							.executeQuery("SELECT COUNT(copyNumber) FROM cs485_project.inventory WHERE bookID = \""
+									+ data.getString(1) + "\" AND ISNULL(username)");
+					if (checkedCopies.next()) {
+						available = checkedCopies.getInt(1);
+					}
+					;
+					ResultSet userCopies = sql2
+							.executeQuery("SELECT COUNT(copyNumber) FROM cs485_project.inventory WHERE bookID = \""
+									+ data.getString(1) + "\" AND username = \"" + user + "\"");
+					if (userCopies.next()) {
+						isChecked = userCopies.getInt(1) > 0 ? true : false;
+					}
+				}
+
+				// get div
+				table.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
+						data.getString("author"), data.getString("description"), null, null, data.getString("language"),
+						data.getLong("isbn"), data.getString("edition"), data.getInt("pages"),
+						data.getString("publisher"), data.getString("firstPublishDate"), user, total, available,
+						isChecked, data.getString("bookId")));
 			}
 			return table.toString();
 		} catch (Exception ex) {
