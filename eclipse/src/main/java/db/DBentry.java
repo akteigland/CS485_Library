@@ -77,16 +77,87 @@ public class DBentry {
 	}
 
 	private static String bookDivGenerator(String img, String title, String author, String desc, String[] genres,
-			String[] awards, String lang, int isbn, String edition, int pages, String publisher, String date,
+			String[] awards, String lang, long isbn, String edition, int pages, String publisher, String date,
 			String user) {
 		StringBuilder book = new StringBuilder();
 		// open div
 		book.append("<div class=\"bookBlock\">");
 
 		// image
-		book.append("<img alt=\"book cover\" width=\"200\" height=\"320\" align=\"left\" src=\"");
+		book.append("<img alt=\"book cover\" width=\"250\" height=\"400\" align=\"left\" src=\"");
 		book.append(img);
 		book.append("\">");
+		
+		// main info
+		book.append("<p>");
+		book.append("<b>");
+		book.append(title);
+		book.append("</b>");
+		book.append("<br> Written By: ");
+		book.append(author);
+		book.append("<br><br>");
+		book.append(desc);
+		
+		// extra info
+		book.append("<br>");
+		
+		book.append("<br>ISBN: ");
+		if (isbn != 0 && isbn != 9999999999999L) {
+			book.append(isbn);
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Language: ");
+		if (!lang.isBlank()) {
+			book.append(lang);
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Edition: ");
+		if (!edition.isBlank()) {
+			book.append(edition);
+		} else {
+			book.append("N/A");
+		}
+
+		book.append("<br>Pages: ");
+		if (pages != 0) {
+			book.append(pages);
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Publisher: ");
+		if (!publisher.isBlank()) {
+			book.append(publisher);
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Published Date: ");
+		if (!date.isBlank()) {
+			book.append(date);
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Genres: ");
+		if (genres != null) {
+			book.append(genres.toString());
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("<br>Awards: ");
+		if (awards != null) {
+			book.append(awards.toString());
+		} else {
+			book.append("N/A");
+		}
+		
+		book.append("</p>");
 
 		// close div
 		book.append("</div>");
@@ -100,7 +171,7 @@ public class DBentry {
 			Statement sql = dbconn.createStatement();
 			ResultSet data = sql.executeQuery("SELECT * from cs485_project.books LIMIT " + BOOKS_PER_PAGE);
 			while (data.next()) {
-				table.append(bookDivGenerator(data.getString("coverImg"),data.getString("title"),data.getString("author"), dbPath, null, null, dbPath, 0, dbPath, 0, dbPath, dbPath, dbPath));
+				table.append(bookDivGenerator(data.getString("coverImg"),data.getString("title"),data.getString("author"), data.getString("description"), null, null, data.getString("language"), data.getLong("isbn"), data.getString("edition"), data.getInt("pages"), data.getString("publisher"), data.getString("firstPublishDate"), "username"));
 			}
 			return table.toString();
 		} catch (Exception ex) {

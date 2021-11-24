@@ -5,6 +5,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<title>Library</title>
+		<link rel="stylesheet" href="books.css">
 	</head>
 	<body>
 		<%@ page import="java.io.*" %> 

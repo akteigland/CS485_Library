@@ -1,0 +1,9 @@
+.bookBlock {
+	display: flex;
+	margin: 15px;
+}
+
+.bookBlock p {
+	margin-left: 30px;
+	display: block;
+}
