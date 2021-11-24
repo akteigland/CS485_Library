@@ -14,4 +14,5 @@
 			<input type="submit" Value="Back"></input>
 		</form>
 	</body>
+	<% session.invalidate(); %>
 </html>

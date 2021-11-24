@@ -11,8 +11,23 @@
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
 		<h1>The Library</h1>
+		<%
+		if (session.getAttribute("user") == null) {
+			%>
+			<form action="index.jsp" method="get">
+				<input type="submit" Value="Login"></input>
+			</form>
+			<%
+		} else {
+			%>
+			<form action="goodbye.jsp" method="get">
+				<input type="submit" Value="Logout"></input>
+			</form>
+			<%
+		}
+		%>
 	</body>
 	<%
-		out.print(DBentry.printBooks("test"));
+		out.print(DBentry.printBooks((String) session.getAttribute("user")));
 	%>
 </html>

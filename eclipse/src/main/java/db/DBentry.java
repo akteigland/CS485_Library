@@ -157,14 +157,9 @@ public class DBentry {
 			book.append("N/A");
 		}
 
+		book.append("<br><br>");
 		// only show if logged in
 		if (user != null) {
-			book.append("<br><br>");
-			book.append(available);
-			book.append(" of ");
-			book.append(total);
-			book.append(" copies are available");
-			book.append("<br>");
 			if (isChecked) {
 				book.append("You currently have a copy of this book checked out.");
 				book.append("<input type='button' value='Return' onclick='return(");
@@ -174,6 +169,11 @@ public class DBentry {
 				book.append(")'/>");
 				book.append("<br>");
 			} else {
+				book.append(available);
+				book.append(" of ");
+				book.append(total);
+				book.append(" copies are available");
+				book.append("<br>");
 				book.append("<input type='button' value='Checkout' onclick='checkout(");
 				book.append(user);
 				book.append(", ");
@@ -181,6 +181,8 @@ public class DBentry {
 				book.append(")'/>");
 				book.append("<br>");
 			}
+		} else {
+			book.append("Want to know if this book is available? Login now!");
 		}
 
 		book.append("</p>");
