@@ -20,6 +20,7 @@ public class LoginServlet extends HttpServlet {
 	Connection conn = null;
 	static String dbPath = "jdbc:mysql://localhost:3306";
 
+	@Override
 	public void init() throws ServletException {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -29,6 +30,7 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
+	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
@@ -81,6 +83,7 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
+	@Override
 	public void destroy() {
 		try {
 			if (conn != null && !conn.isClosed()) {
@@ -93,7 +96,7 @@ public class LoginServlet extends HttpServlet {
 
 	/**
 	 * Checks if login credentials are valid
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @return a boolean
@@ -114,7 +117,7 @@ public class LoginServlet extends HttpServlet {
 
 	/**
 	 * Adds a user to the database
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @param first    - first name of the user
