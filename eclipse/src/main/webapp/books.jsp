@@ -27,7 +27,5 @@
 		}
 		%>
 	</body>
-	<%
-		out.print(request.getAttribute("result"));
-	%>
+	${result}
 </html>
