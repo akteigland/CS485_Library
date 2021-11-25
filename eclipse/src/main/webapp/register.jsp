@@ -9,7 +9,8 @@
 	<body>
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
-		<h1>The Library</h1>
+		<%@ include file = "navigation.jsp" %>
+		<h2>Registration</h2>
 		<form action="${pageContext.request.contextPath}/LoginServlet" method="post"> <!--  use post to hide password in URL -->
 			<b>Register</b><br>
 			Username: <input type="text" id="user" name="username" required/><br>
@@ -19,9 +20,6 @@
 			Last Name: <input type="text" id="last" name="lastname" required/><br>
 			<div style="min-height: 20px; color: #FF0000;">${errorMessage}</div>
 			<input type="submit" name="submitRegister"  Value="Submit"></input>
-		</form>
-		<form action="index.jsp" method="get"> <!-- goes to index.jsp -->
-			<input type="submit" Value="Back"></input>
 		</form>
 	</body>
 </html>

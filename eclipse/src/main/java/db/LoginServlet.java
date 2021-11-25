@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
 			            request.getRequestDispatcher("register.jsp").forward(request, response);
 					} else {
 						session.setAttribute("user", username);
-						response.sendRedirect("welcome.jsp");
+						response.sendRedirect("BookServlet");
 					}
 				} else {
 					request.setAttribute("errorMessage", "Passwords must match");
@@ -67,7 +67,7 @@ public class LoginServlet extends HttpServlet {
 				if (password != null && password.trim() != "") {
 					if (checkLogin(username, password)) {
 						session.setAttribute("user", username);
-						response.sendRedirect("welcome.jsp");
+						response.sendRedirect("BookServlet");
 					} else {
 						request.setAttribute("errorMessage", "Incorrect username or password");
 			            request.getRequestDispatcher("index.jsp").forward(request, response);

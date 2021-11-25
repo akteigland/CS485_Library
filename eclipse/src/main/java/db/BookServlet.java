@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,10 +31,17 @@ public class BookServlet extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String author = request.getParameter("author") == null ? "%" : "%" + request.getParameter("author") + "%";
+		String title = request.getParameter("title") == null ? "%" : "%" + request.getParameter("title") + "%";
+		String genre = request.getParameter("genre") == null ? "%" : "%" + request.getParameter("genre") + "%";
+		String award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
-		session.setAttribute("result", printBooks((String) session.getAttribute("user")));
-		response.sendRedirect("books.jsp");
+		Boolean searched = request.getParameter("books").equals("Search");
+		String books = printBooks((String) session.getAttribute("user"), author, genre, title, award);
+		String header = searched ? "<h2>Results</h2>" : "<h2>Latest Books</h2>";
+		session.setAttribute("result", header + books);
+		response.sendRedirect("latest_books.jsp");
 	}
 
 	@Override
@@ -45,21 +51,21 @@ public class BookServlet extends HttpServlet {
 		String buttonPressed = request.getParameter("act");
 		String book = request.getParameter("book");
 		String user = (String) session.getAttribute("user");
-		
+
 		switch (buttonPressed.toLowerCase()) {
-			case "checkout": 
-				checkoutBook(user, book);
-				break;
-			case "return":
-				returnBook(user, book);
-				break;
-			case "join waiting list":
-				waitForBook(user, book);
-				break;
-			case "leave waiting list":
-				leaveWaitForBook(user, book);
-				break;
-			default:
+		case "checkout":
+			checkoutBook(user, book);
+			break;
+		case "return":
+			returnBook(user, book);
+			break;
+		case "join waiting list":
+			waitForBook(user, book);
+			break;
+		case "leave waiting list":
+			leaveWaitForBook(user, book);
+			break;
+		default:
 		}
 
 		// update book list
@@ -79,7 +85,8 @@ public class BookServlet extends HttpServlet {
 
 	private void checkoutBook(String user, String bookId) {
 		try {
-			PreparedStatement sql = conn.prepareStatement("UPDATE cs485_project.inventory SET username = ? WHERE bookId = ? AND copyNumber = (SELECT copyNumber FROM (SELECT * FROM cs485_project.inventory) AS temp WHERE bookId = ? AND ISNULL(username) LIMIT 1)");
+			PreparedStatement sql = conn.prepareStatement(
+					"UPDATE cs485_project.inventory SET username = ? WHERE bookId = ? AND copyNumber = (SELECT copyNumber FROM (SELECT * FROM cs485_project.inventory) AS temp WHERE bookId = ? AND ISNULL(username) LIMIT 1)");
 			sql.setString(1, user);
 			sql.setString(2, bookId);
 			sql.setString(3, bookId);
@@ -91,7 +98,8 @@ public class BookServlet extends HttpServlet {
 
 	private void returnBook(String user, String bookId) {
 		try {
-			PreparedStatement sql = conn.prepareStatement("UPDATE cs485_project.inventory SET username = null WHERE bookId = ? AND username = ?");
+			PreparedStatement sql = conn.prepareStatement(
+					"UPDATE cs485_project.inventory SET username = null WHERE bookId = ? AND username = ?");
 			sql.setString(1, bookId);
 			sql.setString(2, user);
 			sql.executeUpdate();
@@ -110,10 +118,11 @@ public class BookServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void leaveWaitForBook(String user, String bookId) {
 		try {
-			PreparedStatement sql = conn.prepareStatement("DELETE FROM cs485_project.waitinglist WHERE bookId = ? AND username = ?");
+			PreparedStatement sql = conn
+					.prepareStatement("DELETE FROM cs485_project.waitinglist WHERE bookId = ? AND username = ?");
 			sql.setString(1, bookId);
 			sql.setString(2, user);
 			sql.executeUpdate();
@@ -122,22 +131,29 @@ public class BookServlet extends HttpServlet {
 		}
 	}
 
-	private String printBooks(String user) {
+	private String printBooks(String user, String author, String title, String genre, String award) {
 		try {
 			StringBuilder books = new StringBuilder();
-			Statement sql = conn.createStatement();
+			PreparedStatement sql = conn.prepareStatement("SELECT books.*, genres.genres, awards.awards, total, available, checked, IFNULL(waiting,0) as waitingFor from cs485_project.books "
+					+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
+					+ "on genres.bookId = books.bookId "
+					+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
+					+ "on awards.bookId = books.bookId "
+					+ "LEFT JOIN (SELECT bookId, COUNT(*) AS Total, COUNT(IF(ISNULL(username), copyNumber, NULL)) as Available, COUNT(IF(username=?"
+					+ ",1,NULL)) as Checked from cs485_project.inventory group by bookId) as counts "
+					+ "on counts.bookId = books.bookId " + "LEFT JOIN (SELECT bookId, IF(username=?"
+					+ ", TRUE, FALSE) as waiting from cs485_project.waitinglist) as waiting "
+					+ "on waiting.bookID = books.bookId WHERE IFNULL(title,'') LIKE ? AND IFNULL(author,'') LIKE ? and IFNULL(genres,'') LIKE ? and IFNULL(awards,'') LIKE ?"
+					+ " ORDER BY firstPublishDate DESC LIMIT ? ");
 			// TODO: prepared statment
-			ResultSet data = sql.executeQuery(
-					"SELECT books.*, genres.genres, awards.awards, total, available, checked, IFNULL(waiting,0) as waitingFor from cs485_project.books "
-							+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
-							+ "on genres.bookId = books.bookId "
-							+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
-							+ "on awards.bookId = books.bookId "
-							+ "LEFT JOIN (SELECT bookId, COUNT(*) AS Total, COUNT(IF(ISNULL(username), copyNumber, NULL)) as Available, COUNT(IF(username='"
-							+ user + "',1,NULL)) as Checked from cs485_project.inventory group by bookId) as counts "
-							+ "on counts.bookId = books.bookId " + "LEFT JOIN (SELECT bookId, IF(username='" + user
-							+ "', TRUE, FALSE) as waiting from cs485_project.waitinglist) as waiting "
-							+ "on waiting.bookID = books.bookId LIMIT " + MAX_BOOKS);
+			sql.setString(1, user);
+			sql.setString(2, user);
+			sql.setString(3, title);
+			sql.setString(4, author);
+			sql.setString(5, genre);
+			sql.setString(6, award);
+			sql.setInt(7, MAX_BOOKS);
+			ResultSet data = sql.executeQuery();
 			while (data.next()) {
 				books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
 						data.getString("author"), data.getString("description"), data.getString("genres"),
@@ -217,7 +233,7 @@ public class BookServlet extends HttpServlet {
 		}
 
 		book.append("<br>Published Date: ");
-		if (!date.isBlank()) {
+		if (date != null && !date.isBlank()) {
 			book.append(date);
 		} else {
 			book.append("N/A");
