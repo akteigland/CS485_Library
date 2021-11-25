@@ -28,6 +28,6 @@
 		%>
 	</body>
 	<%
-		out.print(DBentry.printBooks((String) session.getAttribute("user")));
+		out.print(request.getAttribute("result"));
 	%>
 </html>

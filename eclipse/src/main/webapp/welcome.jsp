@@ -10,7 +10,7 @@
 		<%@ page import="java.io.*" %> 
 		<%@ page import="db.*" %>
 		<h1>The Library</h1>
-		<form action="books.jsp" method="post">
+		<form action="BookServlet" method="post">
 			<input type="submit" name="books" Value="View Books">
 		</form>
 		<form action="goodbye.jsp" method="get">
