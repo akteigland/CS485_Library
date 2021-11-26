@@ -16,8 +16,11 @@ import javax.servlet.http.HttpSession;
 public class BookServlet extends HttpServlet {
 
 	private Connection conn = null;
-	private static String dbPath = "jdbc:mysql://localhost:3306";
-	private static final int MAX_BOOKS = 10;
+	private String dbPath = "jdbc:mysql://localhost:3306";
+	private final int MAX_BOOKS = 10;
+	// save previous information
+	private String[] previousSearch = { "%", "%", "%", "%", "%" };
+	private String previousPage = "";
 
 	@Override
 	public void init() throws ServletException {
@@ -35,30 +38,32 @@ public class BookServlet extends HttpServlet {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
 		String action = request.getParameter("books");
-		String author = "%", title = "%", genre = "%", award = "%", language = "%";
 		String books;
-		action = action == null ? "" : action; // handle null
+		action = action == null ? previousPage : action; // handle null
+		previousPage = action;
 		switch (action) {
-		case "Search":
-			if (action != null && action.equals("Search")) {
-				author = request.getParameter("author") == null ? "%" : "%" + request.getParameter("author") + "%";
-				title = request.getParameter("title") == null ? "%" : "%" + request.getParameter("title") + "%";
-				genre = request.getParameter("genre") == null ? "%" : "%" + request.getParameter("genre") + "%";
-				award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
-				language = request.getParameter("lang") == null ? "%" : "%" + request.getParameter("lang") + "%";
-			}
-			books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
-			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
-			response.sendRedirect("index.jsp");
-			break;
 		case "Borrowed Books":
 			books = printChecked((String) session.getAttribute("user"));
 			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Borrowed Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
+		case "Search":
+			// update search if possible
+			previousSearch[0] = request.getParameter("author") == null ? previousSearch[0]
+					: "%" + request.getParameter("author") + "%";
+			previousSearch[1] = request.getParameter("title") == null ? previousSearch[1]
+					: "%" + request.getParameter("title") + "%";
+			previousSearch[2] = request.getParameter("genre") == null ? previousSearch[2]
+					: "%" + request.getParameter("genre") + "%";
+			previousSearch[3] = request.getParameter("award") == null ? previousSearch[3]
+					: "%" + request.getParameter("award") + "%";
+			previousSearch[4] = request.getParameter("lang") == null ? previousSearch[4]
+					: "%" + request.getParameter("lang") + "%";
+
+			// no break, fall to default to display
 		default:
-			// by default, display newewst arrivals
-			books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
+			// by default, display previous search
+			books = printBooks((String) session.getAttribute("user"), previousSearch);
 			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
@@ -201,7 +206,7 @@ public class BookServlet extends HttpServlet {
 	/**
 	 * Generates the book results
 	 */
-	private String printBooks(String user, String author, String title, String genre, String award, String language) {
+	private String printBooks(String user, String[] search) {
 		try {
 			StringBuilder books = new StringBuilder();
 			PreparedStatement sql = conn.prepareStatement(
@@ -218,11 +223,11 @@ public class BookServlet extends HttpServlet {
 							+ " ORDER BY firstPublishDate DESC LIMIT ? ");
 			sql.setString(1, user);
 			sql.setString(2, user);
-			sql.setString(3, title);
-			sql.setString(4, author);
-			sql.setString(5, genre);
-			sql.setString(6, award);
-			sql.setString(7, language);
+			sql.setString(3, search[0]);
+			sql.setString(4, search[1]);
+			sql.setString(5, search[2]);
+			sql.setString(6, search[3]);
+			sql.setString(7, search[4]);
 			sql.setInt(8, MAX_BOOKS);
 			ResultSet data = sql.executeQuery();
 			if (data.next() == false) {
