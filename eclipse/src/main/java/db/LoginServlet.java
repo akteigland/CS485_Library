@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Statement;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +46,7 @@ public class LoginServlet extends HttpServlet {
 			String password = request.getParameter("password");
 			String password2 = request.getParameter("password2");
 			String firstname = request.getParameter("firstname");
-			String lastname = request.getParameter("firstname");
+			String lastname = request.getParameter("lastname");
 
 			if (username == null || password == null || password2 == null || firstname == null || lastname == null
 					|| username.isBlank() || password.isBlank() || password2.isBlank() || firstname.isBlank()
@@ -65,6 +64,7 @@ public class LoginServlet extends HttpServlet {
 					request.getRequestDispatcher("index.jsp").forward(request, response);
 				} else {
 					session.setAttribute("user", username);
+					session.setAttribute("name", getName(username));
 					session.setAttribute("message", "Registration Success");
 					response.sendRedirect("BookServlet");
 				}
@@ -82,6 +82,7 @@ public class LoginServlet extends HttpServlet {
 				if (password != null && password.trim() != "") {
 					if (checkLogin(username, password)) {
 						session.setAttribute("user", username);
+						session.setAttribute("name", getName(username));
 						response.sendRedirect("BookServlet");
 					} else {
 						request.setAttribute("loginErrorMessage", "Incorrect username or password");
@@ -109,6 +110,23 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
+	private String getName(String username) {
+		try {
+			PreparedStatement sql = conn
+					.prepareStatement("SELECT firstName, lastName FROM cs485_project.accounts WHERE username = ?");
+			sql.setString(1, username);
+			ResultSet results = sql.executeQuery();
+			if (results.next()) {
+				return results.getString("firstName") + " " + results.getString("lastName");
+			} else {
+				return null;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
 	/**
 	 * Checks if login credentials are valid
 	 *
@@ -116,14 +134,14 @@ public class LoginServlet extends HttpServlet {
 	 * @param password
 	 * @return a boolean
 	 */
-	public boolean checkLogin(String username, String password) {
+	private boolean checkLogin(String username, String password) {
 		try {
-			PreparedStatement sql = conn.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = \""
-					+ username + "\" AND password = \"" + password + "\";");
-			ResultSet results;
-			results = sql.executeQuery();
-			boolean hasMatch = results.next();
-			return hasMatch;
+			PreparedStatement sql = conn
+					.prepareStatement("SELECT * FROM cs485_project.accounts WHERE username = ? AND password = ?");
+			sql.setString(1, username);
+			sql.setString(2, password);
+			ResultSet results = sql.executeQuery();
+			return results.next();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
@@ -139,11 +157,14 @@ public class LoginServlet extends HttpServlet {
 	 * @param last     - last name of the user
 	 * @return a String error message or null
 	 */
-	public String addUser(String username, String password, String first, String last) {
+	private String addUser(String username, String password, String first, String last) {
 		try {
-			Statement sql = conn.createStatement();
-			sql.executeUpdate("INSERT INTO cs485_project.accounts VALUES (\"" + username + "\", \"" + password
-					+ "\", \"" + first + "\", \"" + last + "\");");
+			PreparedStatement sql = conn.prepareStatement("INSERT INTO cs485_project.accounts VALUES (?, ?, ?, ?)");
+			sql.setString(1, username);
+			sql.setString(2, password);
+			sql.setString(3, first);
+			sql.setString(4, last);
+			sql.executeUpdate();
 			return null;
 		} catch (SQLIntegrityConstraintViolationException ex) {
 			return "Username " + username + " is already taken.";

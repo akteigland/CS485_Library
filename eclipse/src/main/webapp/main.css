@@ -10,7 +10,7 @@ h1 {
 	margin-left: 10px;
 }
 
-h2 {
+h2, h4 {
 	margin: 10px;
 }
 
@@ -33,6 +33,12 @@ label {
 input {
 	display: table-cell;
 	border: solid black 1px;
+}
+
+.successMessage {
+	min-height: 20px; 
+	color: darkgreen;
+	margin-left: 10px;
 }
 
 .bookBlock {

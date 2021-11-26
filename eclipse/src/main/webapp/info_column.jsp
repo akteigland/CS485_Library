@@ -9,19 +9,7 @@
 <body>
 	<div class="infoColumn">
 		<%@ include file="navigation.jsp"%>
-		<%
-		if (session.getAttribute("user") != null) {
-		%>
-		<form class="navigation" action="BookServlet" method="get">
-			<input type="submit" name="books" Value="Borrowed Books">
-		</form>
-		<form class="navigation" action="LoginServlet" method="get">
-			<input type="submit" Value="Logout"></input>
-		</form>
-		<%
-		}
-		%>
-		<div style="min-height: 20px; color: #00cc00;">${message}</div>
+		<div class="successMessage">${message}</div>
 		<h2>Search for Books</h2>
 		<form class="searchBox" action="BookServlet" method="get">
 			<p>
