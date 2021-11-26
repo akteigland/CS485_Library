@@ -1,3 +1,40 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background-color: #C0BCB5;
+}
+
+h1 {
+	margin-bottom: 15px;
+	margin-left: 10px;
+}
+
+h2 {
+	margin: 10px;
+}
+
+form {
+	display: table;
+	margin: 10px;
+}
+
+p {
+	display: table-row;
+	margin-left: 10px;
+	font-size: 18px;
+}
+
+label {
+	display: table-cell;
+	padding-right: 5px;
+}
+
+input {
+	display: table-cell;
+	border: solid black 1px;
+}
+
 .bookBlock {
 	display: flex;
 	margin: 15px;
@@ -10,30 +47,18 @@
 
 .navigation {
 	display: inline-block;
-	margin-bottom: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
 
-h1 {
-	margin-bottom: 15px;
+.booksColumn {
+	float: left;
+	width: 75%;
+	background-color: white;
 }
 
-h2 {
-	margin-top: 10px;
-}
-
-form {
-	display: table;
-}
-
-p {
-	display: table-row;
-}
-
-label {
-	display: table-cell;
-	padding-right: 5px;
-}
-
-input {
-	display: table-cell;
+.infoColumn {
+	float: left;
+	width: 25%;
+	min-width: 350px;
 }

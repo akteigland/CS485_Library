@@ -31,6 +31,13 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		session.invalidate();
+		response.sendRedirect("BookServlet");
+	}
+
+	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
@@ -42,22 +49,30 @@ public class LoginServlet extends HttpServlet {
 			String firstname = request.getParameter("firstname");
 			String lastname = request.getParameter("firstname");
 
-			// if user entered a username
-			if (request.getParameter("submitRegister") != null) { // if form was submitted
-				if (password.equals(password2)) {
-					String message = addUser(username, password, firstname, lastname);
-					if (message != null) {
-						request.setAttribute("errorMessage", message);
-			            request.getRequestDispatcher("register.jsp").forward(request, response);
-					} else {
-						session.setAttribute("user", username);
-						response.sendRedirect("BookServlet");
-					}
-				} else {
-					request.setAttribute("errorMessage", "Passwords must match");
-		            request.getRequestDispatcher("register.jsp").forward(request, response);
-				}
+			if (username == null || password == null || password2 == null || firstname == null || lastname == null
+					|| username.isBlank() || password.isBlank() || password2.isBlank() || firstname.isBlank()
+					|| lastname.isBlank()) {
+				request.setAttribute("registerErrorMessage", "All fields are required");
+				request.getRequestDispatcher("index.jsp").forward(request, response);
+				return;
 			}
+
+			// if user entered a username
+			if (password.equals(password2)) {
+				String message = addUser(username, password, firstname, lastname);
+				if (message != null) {
+					request.setAttribute("registerErrorMessage", message);
+					request.getRequestDispatcher("index.jsp").forward(request, response);
+				} else {
+					session.setAttribute("user", username);
+					session.setAttribute("message", "Registration Success");
+					response.sendRedirect("BookServlet");
+				}
+			} else {
+				request.setAttribute("registerErrorMessage", "Passwords must match");
+				request.getRequestDispatcher("index.jsp").forward(request, response);
+			}
+
 		} else {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
@@ -69,16 +84,16 @@ public class LoginServlet extends HttpServlet {
 						session.setAttribute("user", username);
 						response.sendRedirect("BookServlet");
 					} else {
-						request.setAttribute("errorMessage", "Incorrect username or password");
-			            request.getRequestDispatcher("index.jsp").forward(request, response);
+						request.setAttribute("loginErrorMessage", "Incorrect username or password");
+						request.getRequestDispatcher("index.jsp").forward(request, response);
 					}
 				} else {
-					request.setAttribute("errorMessage", "You must enter a password");
-		            request.getRequestDispatcher("index.jsp").forward(request, response);
+					request.setAttribute("loginErrorMessages", "You must enter a password");
+					request.getRequestDispatcher("index.jsp").forward(request, response);
 				}
 			} else {
-				request.setAttribute("errorMessage", "You must enter a username");
-	            request.getRequestDispatcher("index.jsp").forward(request, response);
+				request.setAttribute("loginErrorMessage", "You must enter a username");
+				request.getRequestDispatcher("index.jsp").forward(request, response);
 			}
 		}
 	}
