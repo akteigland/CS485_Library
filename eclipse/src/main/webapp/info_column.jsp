@@ -12,6 +12,9 @@
 		<%
 		if (session.getAttribute("user") != null) {
 		%>
+		<form class="navigation" action="BookServlet" method="get">
+			<input type="submit" name="books" Value="Borrowed Books">
+		</form>
 		<form class="navigation" action="LoginServlet" method="get">
 			<input type="submit" Value="Logout"></input>
 		</form>

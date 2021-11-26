@@ -59,8 +59,9 @@ public class BookServlet extends HttpServlet {
 			response.sendRedirect("index.jsp");
 			break;
 		case "Borrowed Books":
-			// books = printChecked();
-			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Borrowed Books</h1></div>");
+			books = printChecked((String) session.getAttribute("user"));
+			System.out.println(books);
+			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Borrowed Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
 		default:
@@ -165,6 +166,37 @@ public class BookServlet extends HttpServlet {
 			sql.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get a list of checked out booked
+	 */
+	private String printChecked(String user) {
+		try {
+			StringBuilder books = new StringBuilder();
+			PreparedStatement sql = conn.prepareStatement("SELECT books.*, genres.genres, awards.awards from cs485_project.books "
+					+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
+					+ "on genres.bookId = books.bookId "
+					+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
+					+ "on awards.bookId = books.bookId LIMIT 10");
+			ResultSet data = sql.executeQuery();
+			if (data.next() == false) {
+				books.append("<p><b>No results.</b></p>");
+			} else {
+				while (data.next()) {
+					books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
+							data.getString("author"), data.getString("description"), data.getString("genres"),
+							data.getString("awards"), data.getString("language"), data.getLong("isbn"),
+							data.getString("edition"), data.getInt("pages"), data.getString("publisher"),
+							data.getString("firstPublishDate"), user, 0, 0,
+							true, false, data.getString("bookId")));
+				}
+			}
+			return books.toString();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return "Unknown error: " + ex.getMessage();
 		}
 	}
 
