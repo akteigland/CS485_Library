@@ -48,7 +48,7 @@ public class BookServlet extends HttpServlet {
 
 		// send info
 		String books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
-		session.setAttribute("result", "<div class=\"booksColumn\"><h1>Books</h1>" + books + "</div>");
+		session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
 		response.sendRedirect("index.jsp");
 	}
 

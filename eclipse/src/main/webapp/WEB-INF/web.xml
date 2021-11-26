@@ -23,6 +23,11 @@
 		<servlet-name>BookServlet</servlet-name>
 		<servlet-class>db.BookServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>EventServlet</servlet-name>
+		<servlet-class>db.EventServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>LoginServlet</servlet-name>
@@ -32,5 +37,10 @@
 	<servlet-mapping>
 		<servlet-name>BookServlet</servlet-name>
 		<url-pattern>/BookServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>EventServlet</servlet-name>
+		<url-pattern>/EventServlet</url-pattern>
 	</servlet-mapping>
 </web-app>

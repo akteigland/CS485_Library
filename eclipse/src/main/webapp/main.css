@@ -47,18 +47,18 @@ input {
 
 .navigation {
 	display: inline-block;
-	margin-top: 0px;
-	margin-bottom: 0px;
+	margin: 0px;
+	margin-left: 10px;
 }
 
-.booksColumn {
+.resultColumn {
 	float: left;
 	width: 75%;
 	height: 100%;
 	background-color: white;
 }
 
-.booksColumn p {
+.resultColumn p {
 	display: block;
 	margin-left: 10px;
 }
