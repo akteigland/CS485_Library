@@ -28,6 +28,11 @@
 		<servlet-name>EventServlet</servlet-name>
 		<servlet-class>db.EventServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>RoomServlet</servlet-name>
+		<servlet-class>db.RoomServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>LoginServlet</servlet-name>
@@ -42,5 +47,10 @@
 	<servlet-mapping>
 		<servlet-name>EventServlet</servlet-name>
 		<url-pattern>/EventServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>RoomServlet</servlet-name>
+		<url-pattern>/RoomServlet</url-pattern>
 	</servlet-mapping>
 </web-app>

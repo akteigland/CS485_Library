@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class EventServlet extends HttpServlet {
+public class RoomServlet extends HttpServlet {
 
 	private Connection conn = null;
 	private static String dbPath = "jdbc:mysql://localhost:3306";
@@ -33,7 +33,7 @@ public class EventServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		// send info
-		session.setAttribute("result", "<div class=\"resultColumn\"><h1>Events</h1></div>");
+		session.setAttribute("result", "<div class=\"resultColumn\"><h1>Study Rooms</h1></div>");
 		response.sendRedirect("index.jsp");
 	}
 

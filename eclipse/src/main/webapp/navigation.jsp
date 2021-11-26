@@ -8,11 +8,14 @@
 </head>
 <body>
 	<h1>The Library</h1>
-	<form class="navigation" action="BookServlet" method="get">
+	<form class="navigation" style="margin-left: 10px;" action="BookServlet" method="get">
 		<input type="submit" name="books" Value="New Arrivals">
 	</form>
 	<form class="navigation" action="EventServlet" method="get">
-		<input type="submit" name="books" Value="Events">
+		<input type="submit" name="events" Value="Events">
+	</form>
+	<form class="navigation" action="RoomServlet" method="get">
+		<input type="submit" name="rooms" Value="Study Rooms">
 	</form>
 </body>
 </html>
