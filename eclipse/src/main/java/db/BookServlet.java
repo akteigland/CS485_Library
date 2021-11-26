@@ -34,7 +34,7 @@ public class BookServlet extends HttpServlet {
 		// set up
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
-		
+
 		// get search
 		String author = "%", title = "%", genre = "%", award = "%", language = "%";
 		Boolean searched = request.getParameter("books") != null && request.getParameter("books").equals("Search");
@@ -45,10 +45,10 @@ public class BookServlet extends HttpServlet {
 			award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
 			language = request.getParameter("lang") == null ? "%" : "%" + request.getParameter("lang") + "%";
 		}
-		
+
 		// send info
 		String books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
-		session.setAttribute("result","<div class=\"booksColumn\"><h1>Books</h1>" + books + "</div>");
+		session.setAttribute("result", "<div class=\"booksColumn\"><h1>Books</h1>" + books + "</div>");
 		response.sendRedirect("index.jsp");
 	}
 
@@ -178,13 +178,17 @@ public class BookServlet extends HttpServlet {
 			sql.setString(7, language);
 			sql.setInt(8, MAX_BOOKS);
 			ResultSet data = sql.executeQuery();
-			while (data.next()) {
-				books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
-						data.getString("author"), data.getString("description"), data.getString("genres"),
-						data.getString("awards"), data.getString("language"), data.getLong("isbn"),
-						data.getString("edition"), data.getInt("pages"), data.getString("publisher"),
-						data.getString("firstPublishDate"), user, data.getInt("total"), data.getInt("available"),
-						data.getBoolean("checked"), data.getBoolean("waitingFor"), data.getString("bookId")));
+			if (data.next() == false) {
+				books.append("<p><b>No results.</b></p>");
+			} else {
+				while (data.next()) {
+					books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
+							data.getString("author"), data.getString("description"), data.getString("genres"),
+							data.getString("awards"), data.getString("language"), data.getLong("isbn"),
+							data.getString("edition"), data.getInt("pages"), data.getString("publisher"),
+							data.getString("firstPublishDate"), user, data.getInt("total"), data.getInt("available"),
+							data.getBoolean("checked"), data.getBoolean("waitingFor"), data.getString("bookId")));
+				}
 			}
 			return books.toString();
 		} catch (Exception ex) {
