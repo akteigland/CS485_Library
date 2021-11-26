@@ -37,8 +37,8 @@ public class BookServlet extends HttpServlet {
 		String award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
-		Boolean searched = request.getParameter("books").equals("Search");
-		String books = printBooks((String) session.getAttribute("user"), author, genre, title, award);
+		Boolean searched = request.getParameter("books") != null && request.getParameter("books").equals("Search");
+		String books = printBooks((String) session.getAttribute("user"), author, title, genre, award);
 		String header = searched ? "<h2>Results</h2>" : "<h2>Latest Books</h2>";
 		session.setAttribute("result", header + books);
 		response.sendRedirect("latest_books.jsp");
