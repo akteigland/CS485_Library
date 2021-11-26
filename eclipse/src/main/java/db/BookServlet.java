@@ -34,22 +34,39 @@ public class BookServlet extends HttpServlet {
 		// set up
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
-
-		// get search
-		String author = "%", title = "%", genre = "%", award = "%", language = "%";
-		Boolean searched = request.getParameter("books") != null && request.getParameter("books").equals("Search");
-		if (searched) {
-			author = request.getParameter("author") == null ? "%" : "%" + request.getParameter("author") + "%";
-			title = request.getParameter("title") == null ? "%" : "%" + request.getParameter("title") + "%";
-			genre = request.getParameter("genre") == null ? "%" : "%" + request.getParameter("genre") + "%";
-			award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
-			language = request.getParameter("lang") == null ? "%" : "%" + request.getParameter("lang") + "%";
+		String action = request.getParameter("books");
+		if (action == null) {
+			response.sendRedirect("index.jsp");
+			return;
 		}
-
-		// send info
-		String books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
-		session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
-		response.sendRedirect("index.jsp");
+		
+		String author = "%", title = "%", genre = "%", award = "%", language = "%";
+		String books;
+		switch (action) {
+		case "Search":
+			if (action != null && action.equals("Search")) {
+				author = request.getParameter("author") == null ? "%" : "%" + request.getParameter("author") + "%";
+				title = request.getParameter("title") == null ? "%" : "%" + request.getParameter("title") + "%";
+				genre = request.getParameter("genre") == null ? "%" : "%" + request.getParameter("genre") + "%";
+				award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
+				language = request.getParameter("lang") == null ? "%" : "%" + request.getParameter("lang") + "%";
+			}
+			// don't break
+		case "New Arrivals":
+			// send info
+			books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
+			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
+			response.sendRedirect("index.jsp");
+			break;
+		case "Borrowed Books":
+			// books = printChecked();
+			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Borrowed Books</h1></div>");
+			response.sendRedirect("index.jsp");
+			break;
+		default:
+			response.sendRedirect("index.jsp");
+			break;
+		}
 	}
 
 	@Override

@@ -11,6 +11,9 @@
 	<form class="navigation" style="margin-left: 10px;" action="BookServlet" method="get">
 		<input type="submit" name="books" Value="New Arrivals">
 	</form>
+	<form class="navigation" action="BookServlet" method="get">
+		<input type="submit" name="books" Value="Borrowed Books">
+	</form>
 	<form class="navigation" action="EventServlet" method="get">
 		<input type="submit" name="events" Value="Events">
 	</form>
