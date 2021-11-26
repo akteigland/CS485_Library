@@ -8,9 +8,9 @@
 <body>
 	<%@ page import="java.io.*"%>
 	<%@ page import="db.*"%>
+	<h2>Login</h2>
 	<form action="${pageContext.request.contextPath}/LoginServlet" method="post">
 		<!--  use post to hide password in URL -->
-		<h2>Login</h2>
 		<p>
 			<label for="user">Username:</label><input type="text" id="user" name="username" />
 		</p>

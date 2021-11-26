@@ -22,8 +22,8 @@
 		}
 		%>
 		<div style="min-height: 20px; color: #00cc00;">${message}</div>
+		<h2>Search for Books</h2>
 		<form class="searchBox" action="BookServlet" method="get">
-			<h2>Search</h2>
 			<p>
 				<label for="title">Title:</label> <input type="text" id="title" size=30 name="title" />
 			</p>

@@ -54,8 +54,9 @@ input {
 .resultColumn {
 	float: left;
 	width: 75%;
-	height: 100%;
 	background-color: white;
+	height: 100%;
+	display: inline-table;
 }
 
 .resultColumn p {

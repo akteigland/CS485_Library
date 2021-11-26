@@ -17,7 +17,7 @@ public class BookServlet extends HttpServlet {
 
 	private Connection conn = null;
 	private static String dbPath = "jdbc:mysql://localhost:3306";
-	private static final int MAX_BOOKS = 15;
+	private static final int MAX_BOOKS = 10;
 
 	@Override
 	public void init() throws ServletException {
@@ -35,13 +35,9 @@ public class BookServlet extends HttpServlet {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
 		String action = request.getParameter("books");
-		if (action == null) {
-			response.sendRedirect("index.jsp");
-			return;
-		}
-		
 		String author = "%", title = "%", genre = "%", award = "%", language = "%";
 		String books;
+		action = action == null ? "" : action; // handle null
 		switch (action) {
 		case "Search":
 			if (action != null && action.equals("Search")) {
@@ -51,20 +47,19 @@ public class BookServlet extends HttpServlet {
 				award = request.getParameter("award") == null ? "%" : "%" + request.getParameter("award") + "%";
 				language = request.getParameter("lang") == null ? "%" : "%" + request.getParameter("lang") + "%";
 			}
-			// don't break
-		case "New Arrivals":
-			// send info
 			books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
 			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
 		case "Borrowed Books":
 			books = printChecked((String) session.getAttribute("user"));
-			System.out.println(books);
 			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Borrowed Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
 		default:
+			// by default, display newewst arrivals
+			books = printBooks((String) session.getAttribute("user"), author, title, genre, award, language);
+			session.setAttribute("result", "<div class=\"resultColumn\"><h1>Books</h1>" + books + "</div>");
 			response.sendRedirect("index.jsp");
 			break;
 		}
@@ -175,23 +170,26 @@ public class BookServlet extends HttpServlet {
 	private String printChecked(String user) {
 		try {
 			StringBuilder books = new StringBuilder();
-			PreparedStatement sql = conn.prepareStatement("SELECT books.*, genres.genres, awards.awards from cs485_project.books "
-					+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
-					+ "on genres.bookId = books.bookId "
-					+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
-					+ "on awards.bookId = books.bookId LIMIT 10");
+			PreparedStatement sql = conn
+					.prepareStatement("SELECT books.*, genres.genres, awards.awards from cs485_project.books "
+							+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
+							+ "on genres.bookId = books.bookId "
+							+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
+							+ "on awards.bookId = books.bookId WHERE books.bookId IN (SELECT bookId FROM cs485_project.inventory WHERE username = ?) "
+							+ "LIMIT ?");
+			sql.setString(1, user);
+			sql.setInt(2, MAX_BOOKS);
 			ResultSet data = sql.executeQuery();
 			if (data.next() == false) {
-				books.append("<p><b>No results.</b></p>");
+				books.append("<p><b>You are not currently borrowing any books.</b></p>");
 			} else {
-				while (data.next()) {
+				do { // do-while to not call data.next() again
 					books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
 							data.getString("author"), data.getString("description"), data.getString("genres"),
 							data.getString("awards"), data.getString("language"), data.getLong("isbn"),
 							data.getString("edition"), data.getInt("pages"), data.getString("publisher"),
-							data.getString("firstPublishDate"), user, 0, 0,
-							true, false, data.getString("bookId")));
-				}
+							data.getString("firstPublishDate"), user, 0, 0, true, false, data.getString("bookId")));
+				} while (data.next());
 			}
 			return books.toString();
 		} catch (Exception ex) {
@@ -230,14 +228,14 @@ public class BookServlet extends HttpServlet {
 			if (data.next() == false) {
 				books.append("<p><b>No results.</b></p>");
 			} else {
-				while (data.next()) {
+				do { // do-while to not call data.next() again
 					books.append(bookDivGenerator(data.getString("coverImg"), data.getString("title"),
 							data.getString("author"), data.getString("description"), data.getString("genres"),
 							data.getString("awards"), data.getString("language"), data.getLong("isbn"),
 							data.getString("edition"), data.getInt("pages"), data.getString("publisher"),
 							data.getString("firstPublishDate"), user, data.getInt("total"), data.getInt("available"),
 							data.getBoolean("checked"), data.getBoolean("waitingFor"), data.getString("bookId")));
-				}
+				} while (data.next());
 			}
 			return books.toString();
 		} catch (Exception ex) {
