@@ -21,12 +21,12 @@
 	<form class="navigation" action="EventServlet" method="get">
 		<input type="submit" name="events" Value="Events">
 	</form>
-	<form class="navigation" action="RoomServlet" method="get">
-		<input type="submit" name="rooms" Value="Study Rooms">
-	</form>
 	<%
 	if (session.getAttribute("user") != null) {
 	%>
+	<form class="navigation" action="RoomServlet" method="get">
+		<input type="submit" name="rooms" Value="Study Rooms">
+	</form>
 	<form class="navigation" action="BookServlet" method="get">
 		<input type="submit" name="books" Value="Borrowed Books">
 	</form>

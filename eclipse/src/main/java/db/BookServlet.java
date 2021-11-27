@@ -223,8 +223,8 @@ public class BookServlet extends HttpServlet {
 							+ " ORDER BY firstPublishDate DESC LIMIT ? ");
 			sql.setString(1, user);
 			sql.setString(2, user);
-			sql.setString(3, search[0]);
-			sql.setString(4, search[1]);
+			sql.setString(3, search[1]);
+			sql.setString(4, search[0]);
 			sql.setString(5, search[2]);
 			sql.setString(6, search[3]);
 			sql.setString(7, search[4]);

@@ -28,7 +28,7 @@
 				<label for="lang">Language:</label> <input type="text" id="lang" size=30 name="lang" />
 			</p>
 			<p>
-				<label></label> <input type="submit" name="books" Value="Search">
+				<label></label><input type="submit" name="books" Value="Search">
 			</p>
 		</form>
 		<%

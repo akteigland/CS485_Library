@@ -19,7 +19,7 @@ form {
 	margin: 10px;
 }
 
-p {
+form p {
 	display: table-row;
 	margin-left: 10px;
 	font-size: 18px;
@@ -46,9 +46,13 @@ input {
 	margin: 15px;
 }
 
-.bookInfo {
+.bookInfo, .roomInfo {
 	margin-left: 30px;
 	display: block;
+}
+
+.roomInfo h3 {
+	margin: 0px;
 }
 
 .navigation {
@@ -65,7 +69,7 @@ input {
 	display: inline-table;
 }
 
-.resultColumn p {
+.resultColumn > p {
 	display: block;
 	margin-left: 10px;
 }
