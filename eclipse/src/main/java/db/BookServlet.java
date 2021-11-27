@@ -17,7 +17,7 @@ public class BookServlet extends HttpServlet {
 
 	private Connection conn = null;
 	private String dbPath = "jdbc:mysql://localhost:3306";
-	private final int MAX_BOOKS = 10;
+	private final int MAX_BOOKS = 10; // number of results loaded
 	// save previous information
 	private String[] previousSearch = { "%", "%", "%", "%", "%" };
 	private String previousPage = "";

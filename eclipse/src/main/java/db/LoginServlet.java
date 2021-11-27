@@ -16,8 +16,8 @@ import javax.servlet.http.HttpSession;
 
 public class LoginServlet extends HttpServlet {
 
-	Connection conn = null;
-	static String dbPath = "jdbc:mysql://localhost:3306";
+	private Connection conn = null;
+	private final String dbPath = "jdbc:mysql://localhost:3306";
 
 	@Override
 	public void init() throws ServletException {

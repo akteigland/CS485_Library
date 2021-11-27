@@ -36,7 +36,7 @@ input {
 }
 
 .successMessage {
-	min-height: 20px; 
+	min-height: 20px;
 	color: darkgreen;
 	margin-left: 10px;
 }
@@ -46,9 +46,36 @@ input {
 	margin: 15px;
 }
 
-.bookInfo, .roomInfo {
+.bookInfo {
 	margin-left: 30px;
 	display: block;
+}
+
+.roomBlock {
+	margin-left: 30px;
+	margin-bottom: 10px;
+	display: inline-grid;
+}
+
+.roomBlock table {
+	display: table-column;
+}
+
+.roomBlock td {
+	padding-right: 15px;
+}
+
+.roomBlock .timeslot {
+	text-align: center;
+}
+
+.roomBlock form {
+	margin: 0px;
+}
+
+.roomInfo {
+	text-align: center;
+	display: table-column;
 }
 
 .roomInfo h3 {
@@ -69,7 +96,7 @@ input {
 	display: inline-table;
 }
 
-.resultColumn > p {
+.resultColumn>p {
 	display: block;
 	margin-left: 10px;
 }

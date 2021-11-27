@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 public class EventServlet extends HttpServlet {
 
 	private Connection conn = null;
-	private static String dbPath = "jdbc:mysql://localhost:3306";
+	private final String dbPath = "jdbc:mysql://localhost:3306";
 
 	@Override
 	public void init() throws ServletException {
