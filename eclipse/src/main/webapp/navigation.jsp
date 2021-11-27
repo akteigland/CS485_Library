@@ -4,7 +4,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Library</title>
-<link rel="stylesheet" href="main.css">
 </head>
 <body>
 	<h1>The Library</h1>

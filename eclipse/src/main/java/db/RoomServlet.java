@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +26,7 @@ public class RoomServlet extends HttpServlet {
 	// hour time
 	private final int MIN_HOUR = 8;
 	private final int MAX_HOUR = 17; // 5pm
+	private String previousDate = java.time.LocalDate.now().toString();
 
 	@Override
 	public void init() throws ServletException {
@@ -53,7 +53,8 @@ public class RoomServlet extends HttpServlet {
 
 		// get date from form, or today if null
 		String date_s = request.getParameter("date");
-		String date = date_s == null || date_s.isBlank() ? java.time.LocalDate.now().toString() : date_s;
+		String date = date_s == null || date_s.isBlank() ? previousDate : date_s;
+		previousDate = date;
 
 		// construct result
 		StringBuilder responseHtml = new StringBuilder();
@@ -71,11 +72,61 @@ public class RoomServlet extends HttpServlet {
 	}
 
 	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		HttpSession session = request.getSession();
+		String buttonPressed = request.getParameter("act");
+		String room = request.getParameter("room");
+		String hour = request.getParameter("time");
+		String user = (String) session.getAttribute("user");
+
+		switch (buttonPressed.toLowerCase()) {
+		case "cancel":
+			cancelRoom(user, room, hour, previousDate);
+			break;
+		case "reserve":
+			reserveRoom(user, room, hour, previousDate);
+			break;
+		default:
+		}
+		
+		doGet(request, response);
+	}
+
+	@Override
 	public void destroy() {
 		try {
 			if (conn != null && !conn.isClosed()) {
 				conn.close();
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void cancelRoom(String user, String room, String hour, String date) {
+		try {
+			PreparedStatement sql = conn.prepareStatement(
+					"DELETE FROM cs485_project.reservedrooms WHERE roomId = ? AND roomHour = ? AND roomDate = STR_TO_DATE(?, '%Y-%m-%d') AND username = ?");
+			sql.setString(1, room);
+			sql.setString(2, hour);
+			sql.setString(3, date);
+			sql.setString(4, user);
+			sql.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void reserveRoom(String user, String room, String hour, String date) {
+		try {
+			PreparedStatement sql = conn.prepareStatement(
+					"INSERT INTO cs485_project.reservedrooms VALUES(?,?,STR_TO_DATE(?, '%Y-%m-%d'),?)");
+			sql.setString(1, room);
+			sql.setString(2, hour);
+			sql.setString(3, date);
+			sql.setString(4, user);
+			sql.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
