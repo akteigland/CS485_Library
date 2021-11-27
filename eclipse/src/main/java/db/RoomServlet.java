@@ -123,6 +123,7 @@ public class RoomServlet extends HttpServlet {
 				room.append("</td><td>");
 				room.append("<form action=\"RoomServlet\" method=\"post\">");
 				room.append("<input type='hidden' name='room' value='" + id + "'>");
+				room.append("<input type='hidden' name='time' value='" + i + "'>");
 				room.append("<input type='submit' name='act' value='Cancel'>");
 				room.append("</form></td>");
 			} else {
@@ -130,6 +131,7 @@ public class RoomServlet extends HttpServlet {
 				room.append("</td><td>");
 				room.append("<form action=\"RoomServlet\" method=\"post\">");
 				room.append("<input type='hidden' name='room' value='" + id + "'>");
+				room.append("<input type='hidden' name='time' value='" + i + "'>");
 				room.append("<input type='submit' name='act' value='Reserve'>");
 				room.append("</form></td>");
 			}
