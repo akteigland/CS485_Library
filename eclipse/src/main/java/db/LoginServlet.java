@@ -14,6 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * LoginServlet
+ * Handles any account related queries
+ * @author Alissa Teigland
+ */
 public class LoginServlet extends HttpServlet {
 
 	private Connection conn = null;
@@ -30,6 +35,9 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Handles logout
+	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		session.invalidate();
@@ -37,6 +45,9 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Handles login and registration
+	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
@@ -72,7 +83,6 @@ public class LoginServlet extends HttpServlet {
 				request.setAttribute("registerErrorMessage", "Passwords must match");
 				request.getRequestDispatcher("index.jsp").forward(request, response);
 			}
-
 		} else {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
@@ -110,6 +120,11 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Gets an accounts first and last name
+	 * @param username
+	 * @return the users first and last name
+	 */
 	private String getName(String username) {
 		try {
 			PreparedStatement sql = conn
@@ -129,7 +144,6 @@ public class LoginServlet extends HttpServlet {
 
 	/**
 	 * Checks if login credentials are valid
-	 *
 	 * @param username
 	 * @param password
 	 * @return a boolean

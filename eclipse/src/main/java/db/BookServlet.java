@@ -13,10 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * BookServlet
+ * Handles any book related queries
+ * @author Alissa Teigland
+ */
 public class BookServlet extends HttpServlet {
 
 	private Connection conn = null;
-	private String dbPath = "jdbc:mysql://localhost:3306";
+	private final String dbPath = "jdbc:mysql://localhost:3306";
 	private final int MAX_BOOKS = 10; // number of results loaded
 	// save previous information
 	private String[] previousSearch = { "%", "%", "%", "%", "%" };
@@ -33,13 +38,16 @@ public class BookServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Loads the book related pages
+	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// set up
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
 		String action = request.getParameter("books");
 		String books;
-		action = action == null ? previousPage : action; // handle null
+		action = action == null ? previousPage : action; // on null, load previous page
 		previousPage = action;
 		switch (action) {
 		case "Borrowed Books":
@@ -71,6 +79,9 @@ public class BookServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Handles the book related buttons
+	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();

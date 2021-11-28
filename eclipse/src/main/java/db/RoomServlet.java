@@ -15,17 +15,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * RoomServlet
+ * handles all study room related requests
+ * @author Alissa Teigland
+ */
 public class RoomServlet extends HttpServlet {
 
 	private Connection conn = null;
 	private final String dbPath = "jdbc:mysql://localhost:3306";
-	private String dateForm = "<h2>Search Study Rooms</h2>" + "<form action=\"RoomServlet\" method=\"get\">"
-			+ "<p><label for=\"date\">Date:</label><input type=\"date\" id=\"date\" name=\"date\"></p>"
-			+ "<p><label></label><input type=\"submit\" name=\"submit\" Value=\"View Rooms\"></p>" + "</form>";
-	// Study rooms are offered every hour between MIN_HOUR and MAX_HOUR. Uses 24
-	// hour time
+	// Study rooms are offered every hour between MIN_HOUR and MAX_HOUR. Uses 24 hour time internally
 	private final int MIN_HOUR = 8;
 	private final int MAX_HOUR = 17; // 5pm
+	// store the previous search
 	private String previousDate = java.time.LocalDate.now().toString();
 
 	@Override
@@ -39,6 +41,9 @@ public class RoomServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Handles getting page results
+	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// set up
 		response.setContentType("text/html");
@@ -55,6 +60,10 @@ public class RoomServlet extends HttpServlet {
 		String date_s = request.getParameter("date");
 		String date = date_s == null || date_s.isBlank() ? previousDate : date_s;
 		previousDate = date;
+		
+		String dateForm = "<h2>Search Study Rooms</h2>" + "<form action=\"RoomServlet\" method=\"get\">"
+				+ "<p><label for=\"date\">Date:</label><input type=\"date\" id=\"date\" name=\"date\"></p>"
+				+ "<p><label></label><input type=\"submit\" name=\"submit\" Value=\"View Rooms\"></p>" + "</form>";
 
 		// construct result
 		StringBuilder responseHtml = new StringBuilder();
@@ -72,6 +81,9 @@ public class RoomServlet extends HttpServlet {
 	}
 
 	@Override
+	/**
+	 * Handles buttons
+	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
@@ -90,6 +102,7 @@ public class RoomServlet extends HttpServlet {
 		default:
 		}
 		
+		// load room page again
 		doGet(request, response);
 	}
 
@@ -104,6 +117,13 @@ public class RoomServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Cancels a study room reservation
+	 * @param user
+	 * @param room
+	 * @param hour
+	 * @param date
+	 */
 	private void cancelRoom(String user, String room, String hour, String date) {
 		try {
 			PreparedStatement sql = conn.prepareStatement(
@@ -118,6 +138,13 @@ public class RoomServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Reserves a study room
+	 * @param user
+	 * @param room
+	 * @param hour
+	 * @param date
+	 */
 	private void reserveRoom(String user, String room, String hour, String date) {
 		try {
 			PreparedStatement sql = conn.prepareStatement(
@@ -132,12 +159,22 @@ public class RoomServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Generates a div containing all information for a study room
+	 * @param id
+	 * @param name
+	 * @param location
+	 * @param hoursUnavailable
+	 * @param hoursReserved
+	 * @return
+	 */
 	private String roomDivGenerator(int id, String name, String location, String[] hoursUnavailable,
 			String[] hoursReserved) {
 		StringBuilder room = new StringBuilder();
 		room.append("<div class=\"roomBlock\">");
 		room.append("<div class=\"roomInfo\">");
 		room.append("<h3>");
+		// Show name and id like "Study Room 100"
 		room.append(name);
 		room.append(" ");
 		room.append(id);
@@ -146,14 +183,18 @@ public class RoomServlet extends HttpServlet {
 		room.append(location);
 		room.append("</i>");
 		room.append("</div>");
+		
+		// Create Table
 		room.append("<table>");
 		room.append("<tr><th>Timeslot</th><th>Status</th><th></th></tr>");
 		for (int i = MIN_HOUR; i < MAX_HOUR; i++) {
 			room.append("<tr>");
 
-			// print timeslot
+			// convert to 12 hour time
 			String suffix = i < 12 ? "AM" : "PM";
-			int hour = (i > 12) ? i - 12 : i;
+			int hour = (i > 12) ? i - 12 : i; 
+			
+			// print timeslot
 			room.append("<td class=\"timeslot\">");
 			room.append(hour);
 			room.append(":00");
@@ -164,7 +205,7 @@ public class RoomServlet extends HttpServlet {
 			room.append(suffix);
 			room.append("</td>");
 
-			// print status
+			// print status + button
 			room.append("<td>");
 			if (arrayContains(hoursUnavailable, i) != -1) {
 				room.append("Unavailable");
@@ -194,6 +235,12 @@ public class RoomServlet extends HttpServlet {
 		return room.toString();
 	}
 
+	/**
+	 * Prints all study rooms
+	 * @param user - the user logged in
+	 * @param date - the date being viewed
+	 * @return a String containing HTML
+	 */
 	private String printAll(String user, String date) {
 		try {
 			StringBuilder rooms = new StringBuilder();
@@ -209,6 +256,7 @@ public class RoomServlet extends HttpServlet {
 			sql.setString(4, date);
 			ResultSet data = sql.executeQuery();
 			while (data.next()) {
+				// getArray doesn't seem to work with mySQL, so convert a String into String[]
 				String unavailable = data.getString("unavailable");
 				String[] una = (unavailable != null) ? unavailable.split(",") : null;
 				String reserved = data.getString("reserved");
@@ -256,6 +304,12 @@ public class RoomServlet extends HttpServlet {
 		return datetime.format(DateTimeFormatter.ofPattern("MMMM d'" + suffix + "' yyyy"));
 	}
 
+	/**
+	 * Specifically searches String arrays for a specific int
+	 * @param arr - the array to search in
+	 * @param key - the int to search for
+	 * @return the index of key or -1 if not found
+	 */
 	private int arrayContains(String[] arr, int key) {
 		if (arr == null) {
 			return -1;
