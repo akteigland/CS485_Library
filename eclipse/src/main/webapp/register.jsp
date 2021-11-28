@@ -29,7 +29,7 @@
 		<p>
 			<label></label><input type="submit" name="submitRegister" Value="Register"></input>
 		</p>
-		<label></label>
+		<label></label> <!-- Empty label for formatting -->
 		<div style="min-height: 20px; color: #FF0000;">${registerErrorMessage}</div>
 	</form>
 </body>

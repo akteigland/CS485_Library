@@ -21,6 +21,7 @@
 		<input type="submit" name="events" Value="Events">
 	</form>
 	<%
+	// only show these buttons if logged in
 	if (session.getAttribute("user") != null) {
 	%>
 	<form class="navigation" action="RoomServlet" method="get">

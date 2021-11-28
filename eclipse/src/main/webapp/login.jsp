@@ -20,7 +20,7 @@
 		<p>
 			<label></label><input type="submit" Value="Login"></input>
 		</p>
-		<label></label>
+		<label></label>  <!-- Empty label for formatting -->
 		<div style="min-height: 20px; color: #FF0000;">${loginErrorMessage}</div>
 	</form>
 </body>

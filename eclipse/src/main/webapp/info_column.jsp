@@ -31,13 +31,14 @@
 			</p>
 		</form>
 		<%
+		// only show login and registration form if not logged in
 		if (session.getAttribute("user") == null) {
 		%>
 		<%@ include file="login.jsp"%>
 		<%@ include file="register.jsp"%>
 		<%
 		}
-		session.setAttribute("message", ""); // clear message
+		session.setAttribute("message", ""); // clear any messages
 		%>
 	</div>
 </body>
