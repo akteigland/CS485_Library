@@ -181,7 +181,7 @@ public class BookServlet extends HttpServlet {
 	}
 
 	/**
-	 * Get a list of checked out booked
+	 * Get a list of checked out books
 	 */
 	private String printChecked(String user) {
 		try {
@@ -191,10 +191,8 @@ public class BookServlet extends HttpServlet {
 							+ "LEFT JOIN (SELECT bookId, group_concat(distinct genre order by genre ASC SEPARATOR ', ') as genres FROM cs485_project.genreslist GROUP BY bookId) as genres "
 							+ "on genres.bookId = books.bookId "
 							+ "LEFT JOIN (SELECT bookId, group_concat(distinct award order by award ASC SEPARATOR ', ') as awards FROM cs485_project.awardslist GROUP BY bookId) as awards "
-							+ "on awards.bookId = books.bookId WHERE books.bookId IN (SELECT bookId FROM cs485_project.inventory WHERE username = ?) "
-							+ "LIMIT ?");
+							+ "on awards.bookId = books.bookId WHERE books.bookId IN (SELECT bookId FROM cs485_project.inventory WHERE username = ?)");
 			sql.setString(1, user);
-			sql.setInt(2, MAX_BOOKS);
 			ResultSet data = sql.executeQuery();
 			if (data.next() == false) {
 				books.append("<p><b>You are not currently borrowing any books.</b></p>");
